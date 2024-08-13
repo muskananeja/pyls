@@ -12,4 +12,5 @@ import time
 
 def listout():
     entries = os.listdir(".")
+    pass # Placeholder for implementation
 #lists all files in current directory "." refers to current directory, stored in entries list
