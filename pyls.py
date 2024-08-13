@@ -1,11 +1,4 @@
- 
-#goal is to implement a python command line tool called py;
-#mimics unix ls command
-#using fun
 import os
-# os allows and provides functions to interact with the operating system 
-#os.listdir() returns a list containing the names of the entries in the directory given by the path
-
 import argparse
 import time
 
@@ -21,6 +14,46 @@ def parse_arguments():
     parser.add_argument('-F', '--classify', action='store_true', help='classify files with a symbol')
     return parser.parse_args()
 
+def format_entry(entry, args):
+    """
+    Formats a single entry based on the command-line arguments.
+
+    Args:
+        entry (str): The file or directory name.
+        args (argparse.Namespace): The parsed command-line arguments.
+
+    Returns:
+        str: The formatted entry string.
+    """
+    assert isinstance(entry, str), "Entry should be a string"
+    assert isinstance(args, argparse.Namespace), "Args should be of type argparse.Namespace"
+    
+    if args.classify:
+        if os.path.isdir(entry):
+            entry += "/"
+        elif os.access(entry, os.X_OK):
+            entry += "*"
+        return entry
+    elif args.long:
+        return format_long_entry(entry)
+    else:
+        return entry
+
+def format_long_entry(entry):
+    """
+    Formats a single entry in long format.
+
+    Args:
+        entry (str): The file or directory name.
+
+    Returns:
+        str: The formatted entry string with permissions, size, and modification time.
+    """
+    file_stat = os.stat(entry)
+    permissions = oct(file_stat.st_mode)[-3:]
+    file_size = file_stat.st_size
+    modification_time = time.strftime('%Y-%m-%d %H:%M', time.localtime(file_stat.st_mtime))
+    return f"{permissions} {file_size} {modification_time} {entry}"
 
 def listout():
     args = parse_arguments()
@@ -28,27 +61,7 @@ def listout():
     entries = os.listdir(".")
 
     for entry in entries:
-        if args.classify:
-            if os.path.isdir(entry):
-                entry += "/"
-            elif os.access(entry, os.X_OK):
-                entry += "*"
-            print(entry)
-        elif args.long:
-            file_stat = os.stat(entry)
-            permissions = oct(file_stat.st_mode)[-3:]
-            file_size = file_stat.st_size
-            modification_time = time.strftime('%Y-%m-%d %H:%M', time.localtime(file_stat.st_mtime))
-            print(f"{permissions} {file_size} {modification_time} {entry}")
-        else:
-            print(entry)
-
-
+        print(format_entry(entry, args))
 
 if __name__ == "__main__":
     listout()
-
-def listout():
-    entries = os.listdir(".")
-    for entry in entries:
-        print(entry)
