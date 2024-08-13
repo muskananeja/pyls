@@ -10,6 +10,18 @@ import argparse
 import time
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Python implementation of Unix 'ls' command")
+    return parser.parse_args()
+
+def listout():
+    args = parse_arguments()
+    entries = os.listdir(".")
+    for entry in entries:
+        print(entry)
+
+if __name__ == "__main__":
+    listout()
 
 def listout():
     entries = os.listdir(".")
