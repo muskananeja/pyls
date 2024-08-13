@@ -13,20 +13,22 @@ import time
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Python implementation of Unix 'ls' command")
     parser.add_argument('-l', '--long', action='store_true', help='use a long listing format')
+    parser.add_argument('-F', '--classify', action='store_true', help='classify files with a symbol')
     return parser.parse_args()
 
 
-def listout():
-    args = parse_arguments()
-    entries = os.listdir(".")
-    for entry in entries:
-        print(entry)
 
 def listout():
     args = parse_arguments()
     entries = os.listdir(".")
     for entry in entries:
-        if args.long:
+        if args.classify:
+            if os.path.isdir(entry):
+                entry += "/"
+            elif os.access(entry, os.X_OK):
+                entry += "*"
+            print(entry)
+        elif args.long:
             file_stat = os.stat(entry)
             permissions = oct(file_stat.st_mode)[-3:]
             file_size = file_stat.st_size
@@ -34,6 +36,7 @@ def listout():
             print(f"{permissions} {file_size} {modification_time} {entry}")
         else:
             print(entry)
+
 
 
 if __name__ == "__main__":
