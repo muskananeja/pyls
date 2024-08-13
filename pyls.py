@@ -9,18 +9,24 @@ import os
 import argparse
 import time
 
-
 def parse_arguments():
+    """
+    Parses command-line arguments using argparse.
+
+    Returns:
+        argparse.Namespace: An object containing the parsed arguments.
+    """
     parser = argparse.ArgumentParser(description="Python implementation of Unix 'ls' command")
     parser.add_argument('-l', '--long', action='store_true', help='use a long listing format')
     parser.add_argument('-F', '--classify', action='store_true', help='classify files with a symbol')
     return parser.parse_args()
 
 
-
 def listout():
     args = parse_arguments()
+    assert isinstance(args, argparse.Namespace), "Expected args to be an instance of argparse.Namespace"
     entries = os.listdir(".")
+
     for entry in entries:
         if args.classify:
             if os.path.isdir(entry):
